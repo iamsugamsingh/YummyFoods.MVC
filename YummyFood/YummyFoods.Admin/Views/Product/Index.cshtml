@@ -1,0 +1,180 @@
+﻿@model IEnumerable<YummyFoods.Models.ViewModelClasses.TblProductViewModel>
+@using YummyFoods.Models.DBModelClasses
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="list-group">
+                <a href="~/Dashboard/Index">
+                <li class="list-group-item active" aria-current="true">Dashboard</li>
+                </a>
+                <a href="~/Product/Index">
+                <li class="list-group-item">Products</li>
+                </a>
+
+                <li class="list-group-item">Reports</li>
+                <a href="~/CouponOffers/Index">
+                <li class="list-group-item">Coupons & Offers</li>
+                </a>
+                <a href="~/Categories/Index">
+                <li class="list-group-item">Category</li>
+                </a>
+                <li class="list-group-item">User Management</li>
+                <li class="list-group-item">Configuration Settings</li>
+            </ul>
+        </div>
+        <div class="col-sm-9">
+            <div>
+                <h2>Products</h2>
+            </div>
+
+            <div>
+
+                <form action="~/Product/AddNewProduct" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" id="ProdId" class="form-control" name="ProductId" hidden>
+                        </div>
+                        <div class="col">
+                            <input type="text" id="ProdName" class="form-control" placeholder="Product Name" name="ProductName">
+                        </div>
+
+                        <div class="col">
+                            <input type="text" id="ProdDescription" class="form-control" placeholder="Product Description" name="ProductDescription">
+                        </div>
+
+                        <div class="col">
+                            <input type="number" id="ProdPrice" class="form-control" placeholder="Product Price" name="ProductPrice">
+                        </div>
+
+                        <div class="col">
+                            <input type="number" id="ProdQuantity" class="form-control" placeholder="Product Quantity" name="ProductQuantity">
+                        </div>
+
+                        <div class="col">
+                            <select class="form-select" id="CategoryId" aria-label="Default select example" name="CategoryId">
+                                <option selected value="0">Select Category Name</option>
+
+                                @{
+                                    List<TblCategory> categoryData=(List<TblCategory>)ViewBag.AllCategories;
+
+                                    foreach (var item in categoryData)
+                                    {
+                                        <option value="@item.CategoryId">@item.CategoryName</option>
+                                    }
+
+                                }
+
+
+                            </select>
+                        </div>
+
+                        <div class="col">
+                            <label for="formFile" class="form-label">Upload Product Images</label>
+                            <input class="form-control" type="file" name="UploadedProductImage" multiple>
+                        </div>
+
+                        <div>
+                            <button type="submit">Save Product</button>
+                        </div>
+                    </div>
+                </form>
+                
+            </div>
+
+            <div class="row">
+
+                <table class="table table-dark table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">S.No</th>
+                            <th scope="col">Product Name</th>
+                            <th scope="col">Product Category</th>
+                            <th scope="col">Product Description</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Is Active</th>
+                            <th scope="col">Created Date</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @{
+                            int counter = 1;
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@counter</td>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.CategoryName</td>
+                                    <td>@item.ProductDescription</td>
+                                    <td>@item.ProductPrice</td>
+                                    <td><img src="~/ProductImages/@item.ProductImage" width="100px" /> </td>
+                                    <td>@item.ProductQuantity</td>
+                                    <td>@item.IsActive</td>
+                                    <td>@item.CreatedDate</td>
+                                    <td><a href="#" onclick="editProduct(@item.ProductId)">Edit</a></td>
+                                    <td><a href="~/Product/DeleteProduct?Id=@item.ProductId">Delete</a> </td>
+                                </tr>
+                                counter = counter + 1;
+                            }
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js" ></script>
+    <script>
+
+        function editProduct(ProductId) {
+            console.log("ProductId: ", ProductId)
+
+            $.ajax({
+                url: '@Url.Action("EditProduct", "Product")',
+                type: 'get',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: { 'id': ProductId },
+                success: function (data) {
+                    console.log(data)
+
+                    $("#ProdId").val(data.productId);
+                    $("#ProdName").val(data.productName);
+                    $("#ProdDescription").val(data.productDescription);
+                    $("#ProdPrice").val(data.productPrice);
+                    $("#ProdQuantity").val(data.productQuantity);
+                    $("#CategoryId").val(data.categoryId).attr("selected", "selected");;
+                    
+
+
+                },
+                error: function (response) {
+                    alert(response.responseText)
+                }
+            });
+
+
+
+
+        }
+    
+    </script>
+
+
+    
+
+}

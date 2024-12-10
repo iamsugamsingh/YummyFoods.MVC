@@ -1,0 +1,135 @@
+﻿@using YummyFoods.Models.DBModelClasses
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+                <div class="row">
+                    <div class="col-sm-2">
+            <ul class="list-group">
+                <a href="~/Dashboard/Index">
+                <li class="list-group-item active" aria-current="true">Dashboard</li>
+                </a>
+                <a href="~/Product/Index">
+                <li class="list-group-item">Products</li>
+                </a>
+
+                <li class="list-group-item">Reports</li>
+                <a href="~/CouponOffers/Index">
+                <li class="list-group-item">Coupons & Offers</li>
+                </a>
+                <a href="~/Categories/Index">
+                <li class="list-group-item">Category</li>
+                </a>
+                <li class="list-group-item">User Management</li>
+                <li class="list-group-item">Configuration Settings</li>
+            </ul>
+                    </div>
+                    <div class="col-sm-9">
+                        <div>
+                            <h2>Categories</h2>
+                        </div>
+
+                        <div class="row">
+
+                            <form action="~/Categories/AddNewCategory" method="post">
+                                <div class="row">
+                                    <div class="col">
+                                    <input type="hidden" style="display:none;" id="CategoryIdTxtBox" placeholder="Category Name" name="CategoryId">
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" id="CategoryNameTxtBox" class="form-control" placeholder="Category Name" name="CategoryName">
+                                    </div>
+
+                                    <div class="col">
+                                        <input type="text" id="CategoryDescriptionTxtBox" class="form-control" placeholder="Category Description" name="CategoryDescription">
+                                    </div>
+
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-primary">Save Product</button>
+                                    </div>
+                                </div>
+                            </form>
+                        
+                        </div>
+
+                        
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col-8">
+
+                                <table class="table table-dark table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">S.No</th>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Edit</th>
+                                            <th scope="col">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                            @{
+                                List<TblCategory> data = (List<TblCategory>)ViewBag.allCategories;
+
+                                if (data.Any())
+                                {
+                                    for (int i = 0; i < data.Count; i++)
+                                    {
+                                        <tr>
+                                            <th scope="row">@(i + 1)</th>
+                                            <td>@data[i].CategoryName</td>
+                                            <td>@data[i].CategoryDescription</td>
+                                            <td> <a href="#" onclick="EditCategory(@data[i].CategoryId)">Edit</a> </td>
+                                            <td> <a href="~/Categories/DeleteCategory?Id=@data[i].CategoryId">Delete</a> </td>
+                                        </tr>
+                                    }
+                                }
+                                        }
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+
+                        </div>
+                       
+                    </div>
+
+
+                </div>
+
+                <script src="~/lib/jquery/dist/jquery.min.js"></script>
+                <script>               
+                
+                    function EditCategory(CategoryId) {
+                        console.log("CategoryId: ", CategoryId)
+
+                        $.ajax({
+                url: '@Url.Action("EditCategory", "Categories")',
+                            type: 'get',
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            data: {'id': CategoryId},
+                            success: function (data) {
+                                console.log(data)
+                                $("#CategoryIdTxtBox").val(data.categoryId);
+                                $("#CategoryNameTxtBox").val(data.categoryName);
+                                $("#CategoryDescriptionTxtBox").val(data.categoryDescription);
+
+
+                            },
+                            error: function (response) {
+                                alert(response.responseText)
+                            }
+                        });
+
+
+
+
+                    }
+
+
+                </script>
+}

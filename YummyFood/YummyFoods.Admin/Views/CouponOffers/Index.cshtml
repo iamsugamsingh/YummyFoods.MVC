@@ -1,0 +1,155 @@
+﻿@model YummyFoods.Models.DBModelClasses.TblOffersDBModel;
+@using YummyFoods.Models.DBModelClasses;
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+        <div class="row">
+            <div class="col-sm-2">
+                <ul class="list-group">
+                    <a href="~/Dashboard/Index">
+                    <li class="list-group-item active" aria-current="true">Dashboard</li>
+                    </a>
+                    <a href="~/Product/Index">
+                        <li class="list-group-item">Products</li>
+                    </a>
+
+                    <li class="list-group-item">Reports</li>
+                    <a href="~/CouponOffers/Index" >
+                    <li class="list-group-item">Coupons & Offers</li>
+                    </a>
+                    <a href="~/Categories/Index">
+                    <li class="list-group-item">Category</li>
+                    </a>
+                    <li class="list-group-item">User Management</li>
+                    <li class="list-group-item">Configuration Settings</li>
+                </ul>
+            </div>
+            <div class="col-sm-9">
+                <div>
+                    <h2>Offers & Coupons</h2>
+                </div>
+
+                <div>
+
+                    <div class="row">
+
+                        <form action="~/CouponOffers/AddOffers" method="post">
+                            <div class="row">
+                                <div class="col">
+                                    <input type="hidden" style="display:none;" id="OfferIdTxtBox" name="OfferId">
+                                </div>
+                                <div class="col">
+                                    <input type="text" id="OfferCodeTxtBox" class="form-control" placeholder="Offer Code" name="OfferCode">
+                                </div>
+
+                                <div class="col">
+                                    <input type="text" id="OfferValueTxtBox" class="form-control" placeholder="Offer Value" name="OfferValue">
+                                </div>
+                                 <div class="col">
+                                    <label for="vehicle1">Is Percent: </label>
+                                    <input type="checkbox" id="IsPercentCheckBox" name="IsInPercent" value="true">
+                                </div>
+
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary">Save Offer</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <div class="row">
+
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">S.No</th>
+                                    <th scope="col">Coupon Code</th>
+                                    <th scope="col">Coupon Value</th>
+                                    <th scope="col">Is Percent</th>
+                                    <th scope="col">Edit</th>
+                                    <th scope="col">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @{
+                                List<TblOffersDBModel> data = (List<TblOffersDBModel>)ViewBag.AllOffersList;
+
+                                if (data.Any())
+                                {
+                                    for (int i = 0; i < data.Count; i++)
+                                    {
+                                                <tr>
+                                                    <th scope="row">@(i + 1)</th>
+                                                    <td>@data[i].OfferCode</td>
+                                                    <td>@data[i].OfferValue</td>
+                                                    <td>@data[i].IsInPercent</td>
+                                                    <td> <a href="#" onclick="EditOffer(@data[i].OfferId)">Edit</a> </td>
+                                                    <td> <a href="~/CouponOffers/DeleteOffer?Id=@data[i].OfferId">Delete</a> </td>
+                                                </tr>
+                                    }
+                                }
+                                }
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script>
+
+            function EditOffer(offerId) {
+
+                $.ajax({
+                    url: '@Url.Action("EditOffer", "CouponOffers")',
+                    type: 'get',
+                    contentType: 'application/json; charset=utf-8',
+                    data: { 'id': offerId },
+                    success: function (data) {
+                        console.log(data)
+
+                        $("#OfferIdTxtBox").val(data.offerId);
+                        $("#OfferCodeTxtBox").val(data.offerCode);
+                        $("#OfferValueTxtBox").val(data.offerValue);
+
+                        if (data.isInPercent === true) {
+                            $('#IsPercentCheckBox').prop('checked', true);
+                        }
+                        else{
+                        $('#IsPercentCheckBox').prop('checked', false);
+                        }
+
+                        
+                        
+                
+
+
+
+                    },
+                    error: function (response) {
+                        alert(response.responseText)
+                    }
+                });
+
+
+
+
+            }
+
+        </script>
+
+
+}
